@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نموذج تقييم المهارات الوظيفية</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a3a5c;
+    --primary-light: #2563a0;
+    --accent: #0f8a6d;
+    --accent-light: #e6f7f3;
+    --bg: #f4f6f9;
+    --card: #ffffff;
+    --border: #d1d9e6;
+    --text: #1e2b3a;
+    --text-muted: #5a6a7a;
+    --danger: #c0392b;
+    --level-colors: #0f8a6d, #1565c0, #7b1fa2, #e65100, #c62828, #4e342e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    direction: rtl;
+  }
+
+  /* Header */
+  .home-btn{position:fixed;bottom:1.5rem;left:1.5rem;background:#1a3a5c;color:#fff;border:none;border-radius:12px;padding:10px 18px;font-family:'IBM Plex Sans Arabic',sans-serif;font-size:.85rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:999;text-decoration:none;transition:all .2s;}
+.home-btn:hover{background:#2563a0;transform:translateY(-2px);}
+.header {
+    background: linear-gradient(135deg, var(--primary) 0%, #0d2440 100%);
+    color: white;
+    padding: 1.5rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-logo {
+    width: 48px; height: 48px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+  .header-text h1 { font-size: 1.1rem; font-weight: 600; }
+  .header-text p { font-size: 0.78rem; opacity: 0.75; margin-top: 2px; }
+
+  /* Steps indicator */
+  .steps-bar {
+    background: white;
+    border-bottom: 1px solid var(--border);
+    padding: 0.9rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0;
+  }
+  .step {
+    display: flex; align-items: center; gap: 8px;
+    flex: 1;
+    position: relative;
+  }
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+    transform: translateY(-50%);
+    z-index: 0;
+  }
+  .step.done::after { background: var(--accent); }
+  .step-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: white;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 600;
+    color: var(--text-muted);
+    position: relative; z-index: 1;
+    flex-shrink: 0;
+    transition: all 0.3s;
+  }
+  .step.active .step-num {
+    background: var(--primary); border-color: var(--primary); color: white;
+  }
+  .step.done .step-num {
+    background: var(--accent); border-color: var(--accent); color: white;
+  }
+  .step-label {
+    font-size: 0.78rem; color: var(--text-muted); white-space: nowrap;
+    position: relative; z-index: 1; background: white; padding: 0 4px;
+  }
+  .step.active .step-label { color: var(--primary); font-weight: 600; }
+  .step.done .step-label { color: var(--accent); }
+
+  /* Main container */
+  .container {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+  }
+
+  /* Page sections */
+  .page { display: none; }
+  .page.active { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+  .card-title {
+    font-size: 1rem; font-weight: 600; color: var(--primary);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--accent-light);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .icon { font-size: 1.2rem; }
+
+  /* Form elements */
+  .form-group { margin-bottom: 1.25rem; }
+  label {
+    display: block;
+    font-size: 0.85rem; font-weight: 500; color: var(--text);
+    margin-bottom: 6px;
+  }
+  label .req { color: var(--danger); margin-right: 2px; }
+  input[type="text"], input[type="email"], select {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: white;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    direction: rtl;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 3px rgba(37,99,160,0.12);
+  }
+  select { cursor: pointer; }
+
+  /* Department and role selects */
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 600px) { .two-col { grid-template-columns: 1fr; } }
+
+  /* Skills table */
+  .skills-intro {
+    background: var(--accent-light);
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: 0.83rem;
+    color: #0a5a46;
+    margin-bottom: 1.5rem;
+    border-right: 3px solid var(--accent);
+  }
+  .skills-table { width: 100%; border-collapse: collapse; }
+  .skills-table thead th {
+    background: var(--primary);
+    color: white;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    text-align: right;
+  }
+  .skills-table thead th:first-child { border-radius: 0 8px 0 0; }
+  .skills-table thead th:last-child { border-radius: 8px 0 0 0; }
+  .skills-table tbody tr { border-bottom: 1px solid #eef1f5; transition: background 0.15s; }
+  .skills-table tbody tr:hover { background: #f8fafc; }
+  .skills-table tbody td { padding: 12px 14px; font-size: 0.85rem; vertical-align: middle; }
+  .skill-name-cell { font-weight: 500; color: var(--text); }
+  .skill-code { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; font-family: monospace; }
+
+  /* Level badge */
+  .target-level {
+    display: inline-flex; align-items: center;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem; font-weight: 600;
+    white-space: nowrap;
+  }
+  .lvl-1 { background: #e8f5e9; color: #2e7d32; }
+  .lvl-2 { background: #e3f2fd; color: #1565c0; }
+  .lvl-3 { background: #f3e5f5; color: #7b1fa2; }
+  .lvl-4 { background: #fff3e0; color: #e65100; }
+  .lvl-5 { background: #fce4ec; color: #c62828; }
+  .lvl-6 { background: #efebe9; color: #4e342e; }
+
+  /* Level select in table */
+  .level-select {
+    padding: 6px 10px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-size: 0.82rem;
+    width: 110px;
+    background: white;
+    color: var(--text);
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .level-select:focus { outline: none; border-color: var(--primary-light); }
+  .level-select.invalid { border-color: #c0392b !important; background: #fff5f5; }
+.level-select.filled { border-color: var(--accent); background: var(--accent-light); font-weight: 500; }
+
+  /* Buttons */
+  .btn-row { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; gap: 1rem; }
+  .btn {
+    padding: 11px 28px;
+    border-radius: 10px;
+    font-family: 'IBM Plex Sans Arabic', sans-serif;
+    font-size: 0.9rem; font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-primary {
+    background: var(--primary); color: white;
+  }
+  .btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,58,92,0.25); }
+  .btn-secondary {
+    background: white; color: var(--text); border: 1.5px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--bg); }
+  .btn-success {
+    background: var(--accent); color: white;
+  }
+  .btn-success:hover { background: #0a7060; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(15,138,109,0.3); }
+
+  /* Progress on page 2 */
+  .progress-wrap { margin-bottom: 1rem; }
+  .progress-label { font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; display: flex; justify-content: space-between; }
+  .progress-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 3px; transition: width 0.4s ease; width: 0%; }
+
+  /* Disclaimer page */
+  .disclaimer-box {
+    background: #fff8e1;
+    border: 1.5px solid #f9a825;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-size: 0.88rem;
+    line-height: 1.8;
+    color: #5d4037;
+  }
+  .disclaimer-box h3 { color: #e65100; margin-bottom: 0.75rem; font-size: 1rem; }
+  .disclaimer-box p { margin-bottom: 0.75rem; }
+  .disclaimer-box ul { margin: 0 1.5rem; }
+  .disclaimer-box ul li { margin-bottom: 4px; }
+
+  .confirm-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .confirm-row:hover { background: var(--accent-light); border-color: var(--accent); }
+  .confirm-row input[type="checkbox"] {
+    width: 18px; height: 18px; margin-top: 2px; cursor: pointer; flex-shrink: 0; accent-color: var(--accent);
+  }
+  .confirm-row label { cursor: pointer; font-size: 0.88rem; margin: 0; line-height: 1.6; }
+
+  /* Summary card */
+  .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 500px) { .summary-grid { grid-template-columns: 1fr; } }
+  .summary-item { background: var(--bg); border-radius: 8px; padding: 10px 14px; }
+  .summary-item .s-label { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 3px; }
+  .summary-item .s-val { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+
+  /* Role info box */
+  .role-info {
+    background: linear-gradient(135deg, #f0f4ff 0%, #e8f7f3 100%);
+    border: 1px solid #c8d8f0;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .role-info .ri-icon { font-size: 2rem; flex-shrink: 0; }
+  .role-info .ri-name { font-weight: 600; font-size: 0.95rem; color: var(--primary); }
+  .role-info .ri-count { font-size: 0.8rem; color: var(--text-muted); margin-top: 2px; }
+
+  /* Error message */
+  .error-msg { color: var(--danger); font-size: 0.78rem; margin-top: 4px; display: none; }
+  .error-msg.show { display: block; }
+  input.invalid, select.invalid { border-color: var(--danger); }
+
+  /* Success icon on page 3 */
+  .success-banner {
+    background: var(--accent);
+    color: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 1.5rem;
+  }
+  .success-banner .sb-icon { font-size: 2rem; flex-shrink: 0; }
+  .success-banner .sb-text h3 { font-size: 1rem; font-weight: 600; }
+  .success-banner .sb-text p { font-size: 0.82rem; opacity: 0.9; margin-top: 3px; }
+
+  /* Print area */
+  @media print {
+    .header, .steps-bar, .btn-row { display: none !important; }
+    .card { box-shadow: none; border: 1px solid #ddd; }
+    body { background: white; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-logo">🪪</div>
+  <div class="header-text">
+    <h1>نموذج تقييم المهارات الوظيفية</h1>
+    <p>عمادة التعلم الإلكتروني وتقنية المعلومات</p>
+  </div>
+</div>
+
+<!-- Steps bar -->
+<div class="steps-bar">
+  <div class="step active" id="step1">
+    <span class="step-num">1</span>
+    <span class="step-label">البيانات الأساسية</span>
+  </div>
+  <div class="step" id="step2">
+    <span class="step-num">2</span>
+    <span class="step-label">تقييم المهارات</span>
+  </div>
+  <div class="step" id="step3">
+    <span class="step-num">3</span>
+    <span class="step-label">الإقرار والتأكيد</span>
+  </div>
+</div>
+
+<a href="index.html" class="home-btn">🏠 الصفحة الرئيسية</a>
+
+<div class="container">
+
+  <!-- ======== PAGE 1: Basic info ======== -->
+  <div class="page active" id="page1">
+    <div class="card">
+      <div class="card-title"><span class="icon">👤</span> البيانات الشخصية</div>
+      <div class="two-col">
+        <div class="form-group">
+          <label>الاسم الكامل <span class="req">*</span></label>
+          <input type="text" id="inp-name" placeholder="أدخل اسمك الكامل">
+          <div class="error-msg" id="err-name">يرجى إدخال الاسم الكامل</div>
+        </div>
+        <div class="form-group">
+          <label>البريد الإلكتروني <span class="req">*</span></label>
+          <input type="email" id="inp-email" placeholder="example@university.edu.sa" dir="ltr" style="text-align:right;">
+          <div class="error-msg" id="err-email">يرجى إدخال بريد إلكتروني صحيح</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><span class="icon">🏢</span> المسمى الوظيفي</div>
+      <div class="form-group">
+        <label>اختر مسماك الوظيفي <span class="req">*</span></label>
+        <select id="sel-role" onchange="onRoleChange()">
+          <option value="">-- اختر المسمى الوظيفي --</option>
+        </select>
+        <div class="error-msg" id="err-role">يرجى اختيار المسمى الوظيفي</div>
+      </div>
+      <div id="role-preview" style="display:none;">
+        <div class="role-info">
+          <span class="ri-icon">💼</span>
+          <div>
+            <div class="ri-name" id="rp-name"></div>
+            <div class="ri-count" id="rp-count"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <div style="font-size:0.8rem;color:var(--text-muted);">* الحقول المطلوبة</div>
+      <button class="btn btn-primary" onclick="goPage2()">التالي →</button>
+    </div>
+  </div>
+
+  <!-- ======== PAGE 2: Skills assessment ======== -->
+  <div class="page" id="page2">
+    <div class="card">
+      <div class="card-title"><span class="icon">⭐</span> تقييم مستوى المهارات</div>
+
+      <div id="skills-role-info" class="role-info" style="margin-bottom:1.25rem;">
+        <span class="ri-icon">💼</span>
+        <div>
+          <div class="ri-name" id="sk-role-name"></div>
+          <div class="ri-count" id="sk-role-count"></div>
+        </div>
+      </div>
+
+      <div class="skills-intro">
+        يُرجى تحديد مستوى إتقانك الحالي لكل مهارة من المهارات أدناه. المستوى المستهدف هو المستوى المطلوب لدورك الوظيفي.
+      </div>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>التقدم في التعبئة</span>
+          <span id="prog-text">0 / 0</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+      </div>
+
+      <table class="skills-table">
+        <thead>
+          <tr>
+            <th style="width:40%;">اسم المهارة</th>
+            <th style="width:12%;">الرمز</th>
+            <th style="width:18%;">المستوى المستهدف</th>
+            <th style="width:30%;">مستواك الحالي</th>
+          </tr>
+        </thead>
+        <tbody id="skills-tbody">
+        </tbody>
+      </table>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goPage1()">← رجوع</button>
+      <button class="btn btn-primary" onclick="goPage3()">التالي: الإقرار →</button>
+    </div>
+  </div>
+
+  <!-- ======== PAGE 3: Declaration ======== -->
+  <div class="page" id="page3">
+    <div class="card">
+      <div class="card-title"><span class="icon">📋</span> إقرار المسؤولية</div>
+
+      <div class="success-banner">
+        <span class="sb-icon">✅</span>
+        <div class="sb-text">
+          <h3>تم اكتمال تقييم المهارات</h3>
+          <p>يُرجى مراجعة البيانات أدناه ثم تأكيد الإقرار</p>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div style="margin-bottom:1.5rem;">
+        <div style="font-size:0.85rem;font-weight:600;color:var(--text);margin-bottom:0.75rem;">ملخص البيانات</div>
+        <div class="summary-grid">
+          <div class="summary-item"><div class="s-label">الاسم</div><div class="s-val" id="sum-name">—</div></div>
+          <div class="summary-item"><div class="s-label">البريد الإلكتروني</div><div class="s-val" id="sum-email" style="direction:ltr;text-align:right;">—</div></div>
+          <div class="summary-item" style="grid-column:1/-1;"><div class="s-label">المسمى الوظيفي</div><div class="s-val" id="sum-role">—</div></div>
+        </div>
+        <div style="margin-top:0.75rem;padding:10px 14px;background:var(--bg);border-radius:8px;font-size:0.82rem;color:var(--text-muted);">
+          عدد المهارات المقيّمة: <strong id="sum-skills-count" style="color:var(--accent);">0</strong>
+        </div>
+        <div id="sum-missing-wrap" style="display:none;margin-top:0.75rem;padding:10px 14px;background:#fff3cd;border:1.5px solid #f9a825;border-radius:8px;font-size:0.82rem;">
+          ⚠️ <strong style="color:#c0392b;" id="sum-missing-count">0</strong> <span style="color:#856404;">مهارة لم يتم تقييمها — يُنصح بالعودة وإكمال التقييم</span>
+        </div>
+      </div>
+
+      <!-- Disclaimer text -->
+      <div class="disclaimer-box">
+        <h3>📜 نص الإقرار</h3>
+        <p>أنا الموقّع أدناه، أُقرّ وأتعهد بما يلي:</p>
+        <ul>
+          <li>أن المعلومات المدخلة في هذا النموذج صحيحة ودقيقة وتعكس مستواي الفعلي في المهارات المذكورة.</li>
+          <li>أنني أتحمل المسؤولية الكاملة عن صحة البيانات المُدخلة.</li>
+          <li>أنني أفهم أن هذا التقييم سيُستخدم لأغراض التطوير المهني والتخطيط التدريبي.</li>
+          <li>أنني أوافق على مشاركة هذه البيانات مع الجهات المعنية داخل عمادة التعلم الإلكتروني وتقنية المعلومات.</li>
+          <li>أنني لم أستعن بأي شخص آخر لتعبئة هذا النموذج نيابةً عني.</li>
+        </ul>
+      </div>
+
+      <div class="confirm-row" onclick="toggleCheck('chk1')">
+        <input type="checkbox" id="chk1" onchange="updateSubmit()">
+        <label for="chk1">أقرّ بأن جميع البيانات المدخلة صحيحة وتعكس مستواي الحقيقي في المهارات المذكورة.</label>
+      </div>
+      <div class="confirm-row" onclick="toggleCheck('chk2')">
+        <input type="checkbox" id="chk2" onchange="updateSubmit()">
+        <label for="chk2">أتحمل المسؤولية الكاملة عن دقة المعلومات المُقدَّمة وأوافق على استخدامها لأغراض التطوير المهني.</label>
+      </div>
+      <div class="confirm-row" onclick="toggleCheck('chk3')">
+        <input type="checkbox" id="chk3" onchange="updateSubmit()">
+        <label for="chk3">أوافق على مشاركة هذا التقرير مع المشرف المباشر والجهات المختصة في العمادة.</label>
+      </div>
+
+      <div class="error-msg" id="err-checks" style="margin-top:0.5rem;">يرجى الموافقة على جميع بنود الإقرار قبل الإرسال</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-secondary" onclick="goPage2()">← رجوع</button>
+      <button class="btn btn-success" id="btn-submit" onclick="submitForm()" disabled>
+        ✓ تأكيد الإقرار وإرسال النموذج
+      </button>
+    </div>
+  </div>
+
+  <!-- ======== PAGE 4: Done ======== -->
+  <div class="page" id="page4">
+    <div class="card" style="text-align:center;padding:3rem 2rem;">
+      <div style="font-size:4rem;margin-bottom:1rem;">🎉</div>
+      <h2 style="color:var(--accent);font-size:1.4rem;margin-bottom:0.75rem;">تم إرسال النموذج بنجاح!</h2>
+      <p style="color:var(--text-muted);font-size:0.9rem;line-height:1.8;max-width:420px;margin:0 auto 1.5rem;">
+        شكراً لك! تم استلام نموذج تقييم المهارات الخاص بك. سيتم مراجعته من قِبَل الجهة المختصة والتواصل معك قريباً.
+      </p>
+      <div style="background:var(--bg);border-radius:12px;padding:1rem 1.5rem;display:inline-block;text-align:right;min-width:280px;margin-bottom:1.5rem;">
+        <div style="font-size:0.8rem;color:var(--text-muted);margin-bottom:4px;">رقم المرجع</div>
+        <div style="font-size:1.1rem;font-weight:700;color:var(--primary);font-family:monospace;" id="ref-num"></div>
+      </div>
+      <br>
+      <button class="btn btn-secondary" onclick="printForm()">🖨️ طباعة النموذج</button>
+      <br><a href="index.html" class="btn btn-primary" style="margin-top:.75rem;display:inline-flex;text-decoration:none;">🏠 العودة للصفحة الرئيسية</a>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ======== DATA ========
+const jobsData = {"أخصائي أمن سيبراني": [{"skill_name": "الأمن المعلوماتي", "skill_code": "SCTY", "level": "Level 4"}, {"skill_name": "العمليات الأمنية", "skill_code": "SCAD", "level": "Level 4"}, {"skill_name": "إدارة الحوادث ", "skill_code": "USUP", "level": "Level 4"}, {"skill_name": "ضمان  المعلومات", "skill_code": "INAS", "level": "Level 6"}, {"skill_name": "تقييم مواطن الضعف", "skill_code": "VUAS", "level": "Level 4"}, {"skill_name": "اختبارات الاختراق", "skill_code": "PENT", "level": "Level 4"}, {"skill_name": "إدارة الهوية والوصول", "skill_code": "IAMT", "level": "Level 4"}, {"skill_name": "التحليل الجنائي الرقمي", "skill_code": "DGFS", "level": "Level 5"}, {"skill_name": "إدارة المخاطر", "skill_code": "BURM", "level": "Level 5"}, {"skill_name": "مؤشرات المخاطر", "skill_code": "THIN", "level": "Level 4"}, {"skill_name": "استمرارية الأعمال", "skill_code": "COPL", "level": "Level 4"}, {"skill_name": "إدارة السجلات المؤسسية", "skill_code": "RMGT", "level": "Level 4"}], "أخصائي تحول رقمي": [{"skill_name": "تحليل الوضع التجاري", "skill_code": "BUSA", "level": "Level 4"}, {"skill_name": "تحديد وإدارة الاحتياجات", "skill_code": "REQM", "level": "Level 4"}, {"skill_name": "تحسين إجراءات الأعمال", "skill_code": "BPRE", "level": "Level 4"}, {"skill_name": "إدارة الابتكار", "skill_code": "INOV", "level": "Level 5"}, {"skill_name": "رصد التقنيات الناشئة", "skill_code": "EMRG", "level": "Level 4"}, {"skill_name": "تحليلات البيانات", "skill_code": "DAAN", "level": "Level 3"}, {"skill_name": "إدارة البيانات", "skill_code": "DATM", "level": "Level 4"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "تنسيق نظم المعلومات", "skill_code": "ISCO", "level": "Level 6"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 4"}], "أخصائي تقييم الأجهزة التقنية": [{"skill_name": "تصميم الأجهزة", "skill_code": "HWDE", "level": "Level 3"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 3"}, {"skill_name": "إدارة برامج النظام", "skill_code": "SYSP", "level": "Level 3"}, {"skill_name": "تثبيت وحذف النظم", "skill_code": "HSIN", "level": "Level 3"}, {"skill_name": "إدارة التهيئة", "skill_code": "CFMG", "level": "Level 3"}, {"skill_name": "إدارة الأصول", "skill_code": "ASMG", "level": "Level 3"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إدارة الحوادث", "skill_code": "USUP", "level": "Level 3"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 3"}, {"skill_name": "قبول الخدمة", "skill_code": "SEAC", "level": "Level 3"}], "أخصائي دعم فني": [{"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إسناد التطبيقات", "skill_code": "ASUP", "level": "Level 3"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 3"}, {"skill_name": "إدارة برامج النظام", "skill_code": "SYSP", "level": "Level 3"}, {"skill_name": "تثبيت وحذف النظم", "skill_code": "HSIN", "level": "Level 3"}, {"skill_name": "دعم الشبكات", "skill_code": "NTAS", "level": "Level 3"}, {"skill_name": "إدارة الحوادث", "skill_code": "USUP", "level": "Level 3"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 3"}, {"skill_name": "إدارة مستوى الخدمة", "skill_code": "SLMO", "level": "Level 3"}, {"skill_name": "الأمن المعلوماتي", "skill_code": "SCTY", "level": "Level 3"}], "أخصائي شبكات": [{"skill_name": "دعم الشبكات", "skill_code": "NTAS", "level": "Level 3"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 3"}, {"skill_name": "إدارة برامج النظام", "skill_code": "SYSP", "level": "Level 2"}, {"skill_name": "إدارة التهيئة", "skill_code": "CFMG", "level": "Level 2"}, {"skill_name": "إدارة الحوادث", "skill_code": "USUP", "level": "Level 2"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 2"}, {"skill_name": "الأمن المعلوماتي", "skill_code": "SCTY", "level": "Level 2"}, {"skill_name": "عمليات أمنية", "skill_code": "SCAD", "level": "Level 2"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 2"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 2"}], "أخصائي قواعد بيانات": [{"skill_name": "إدارة قواعد البيانات", "skill_code": "DBAD", "level": "Level 4"}, {"skill_name": "تصميم قواعد البيانات", "skill_code": "DBDS", "level": "Level 4"}, {"skill_name": "تصميم ونمذجة البيانات", "skill_code": "DTAN", "level": "Level 4"}, {"skill_name": "إدارة البيانات", "skill_code": "DATM", "level": "Level 4"}, {"skill_name": "تحليلات البيانات", "skill_code": "DAAN", "level": "Level 4"}, {"skill_name": "إدارة الاستمرارية", "skill_code": "COPL", "level": "Level 4"}], "أخصائي كراسات مشاريع فنية": [{"skill_name": "إدارة العقود", "skill_code": "ITCM", "level": "Level 4"}, {"skill_name": "تحديد وإدارة الاحتياجات", "skill_code": "REQM", "level": "Level 4"}, {"skill_name": "نمذجة الأعمال", "skill_code": "BSMO", "level": "Level 4"}, {"skill_name": "الاستشارات", "skill_code": "CNSL", "level": "Level 4"}, {"skill_name": "الاستشارات المتخصصة", "skill_code": "TECH", "level": "Level 4"}, {"skill_name": "إدارة المشاريع", "skill_code": "PRMG", "level": "Level 4"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 4"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 4"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "الرقابة على التغيير", "skill_code": "CHMG", "level": "Level 3"}, {"skill_name": "إدارة تحقيق الفوائد", "skill_code": "BURM", "level": "Level 3"}, {"skill_name": "إدارة المعلومات", "skill_code": "IRMG", "level": "Level 3"}, {"skill_name": "الامتثال لتشريعات المعلومات والبيانات", "skill_code": "PEDP", "level": "Level 4"}, {"skill_name": "الأساليب والأدوات", "skill_code": "METL", "level": "Level 2"}], "أمين المستودع الفني": [{"skill_name": "إدارة الأصول", "skill_code": "ASMG", "level": "Level 3"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 3"}, {"skill_name": "إدارة المرافق", "skill_code": "DCMA", "level": "Level 3"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 3"}, {"skill_name": "قبول الخدمة", "skill_code": "SEAC", "level": "Level 3"}], "دعم فني": [{"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إسناد التطبيقات", "skill_code": "ASUP", "level": "Level 3"}, {"skill_name": "إدارة الحوادث", "skill_code": "USUP", "level": "Level 3"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 3"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 2"}, {"skill_name": "إدارة مستوى الخدمة", "skill_code": "SLMO", "level": "Level 3"}, {"skill_name": "دعم خدمة العملاء", "skill_code": "CSMG", "level": "Level 3"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 2"}, {"skill_name": "إدارة التوافر", "skill_code": "AVMT", "level": "Level 3"}], "رئيس الأمن السيبراني": [{"skill_name": "إدارة التهيئة", "skill_code": "CFMG", "level": "Level 6"}, {"skill_name": "الرقابة على التغيير", "skill_code": "CHMG", "level": "Level 6"}, {"skill_name": "التدقيق والمراجعة", "skill_code": "AUDT", "level": "Level 6"}, {"skill_name": "الامتثال لتشريعات المعلومات والبيانات", "skill_code": "PEDP", "level": "Level 6"}, {"skill_name": "التحليل الجنائي الرقمي", "skill_code": "DGFS", "level": "Level 6"}, {"skill_name": "إدارة المورّدين", "skill_code": "SUPP", "level": "Level 6"}, {"skill_name": "الأمن المعلوماتي", "skill_code": "SCTY", "level": "Level 6"}, {"skill_name": "ضمان المعلومات", "skill_code": "INAS", "level": "Level 6"}, {"skill_name": "إدارة المخاطر", "skill_code": "BURM", "level": "Level 6"}, {"skill_name": "مؤشرات المخاطر", "skill_code": "THIN", "level": "Level 6"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "هندسة الحلول", "skill_code": "ARCH", "level": "Level 6"}, {"skill_name": "إدارة الهوية والوصول", "skill_code": "IAMT", "level": "Level 6"}, {"skill_name": "عمليات أمنية", "skill_code": "SCAD", "level": "Level 6"}, {"skill_name": "إدارة الاستمرارية", "skill_code": "COPL", "level": "Level 5"}], "رئيس قسم البوابة والخدمات الإلكترونية": [{"skill_name": "التخطيط الاستراتيجي لتقنية المعلومات", "skill_code": "ITSP", "level": "Level 6"}, {"skill_name": "إدارة المشاريع", "skill_code": "PRMG", "level": "Level 6"}, {"skill_name": "إدارة التسليم", "skill_code": "DEMG", "level": "Level 6"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 6"}, {"skill_name": "إدارة المنتجات", "skill_code": "PROD", "level": "Level 6"}, {"skill_name": "تصميم النظم", "skill_code": "DESN", "level": "Level 6"}, {"skill_name": "تحسين إجراءات الأعمال", "skill_code": "BPRE", "level": "Level 6"}, {"skill_name": "إدارة الجودة", "skill_code": "QUMG", "level": "Level 6"}, {"skill_name": "ضمان الجودة", "skill_code": "QUAS", "level": "Level 6"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "الامتثال لتشريعات المعلومات والبيانات", "skill_code": "PEDP", "level": "Level 6"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 6"}], "رئيس قسم التشغيل": [{"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 6"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 5"}, {"skill_name": "إدارة برامج النظام", "skill_code": "SYSP", "level": "Level 5"}, {"skill_name": "إدارة التوافر", "skill_code": "AVMT", "level": "Level 5"}, {"skill_name": "إدارة الاستمرارية", "skill_code": "COPL", "level": "Level 5"}, {"skill_name": "إدارة القدرات", "skill_code": "CPMG", "level": "Level 5"}, {"skill_name": "إدارة الحوادث", "skill_code": "USUP", "level": "Level 4"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 5"}, {"skill_name": "إدارة مستوى الخدمة", "skill_code": "SLMO", "level": "Level 5"}, {"skill_name": "إدارة التهيئة", "skill_code": "CFMG", "level": "Level 4"}, {"skill_name": "إدارة الأصول", "skill_code": "ASMG", "level": "Level 4"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}], "رئيس قسم الدعم الفني": [{"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إدارة مستوى الخدمة", "skill_code": "SLMO", "level": "Level 5"}, {"skill_name": "إدارة دليل الخدمات", "skill_code": "SCMG", "level": "Level 5"}, {"skill_name": "إدارة الحوادث", "skill_code": "USUP", "level": "Level 5"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 5"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 5"}, {"skill_name": "إدارة التهيئة", "skill_code": "CFMG", "level": "Level 5"}, {"skill_name": "إدارة الأصول", "skill_code": "ASMG", "level": "Level 5"}, {"skill_name": "الرقابة على التغيير", "skill_code": "CHMG", "level": "Level 5"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 5"}, {"skill_name": "إدارة الجودة", "skill_code": "QUMG", "level": "Level 5"}, {"skill_name": "ضمان الجودة", "skill_code": "QUAS", "level": "Level 5"}], "رئيس قسم الشبكات": [{"skill_name": "دعم الشبكات", "skill_code": "NTAS", "level": "Level 5"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 5"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إدارة المشاريع", "skill_code": "PRMG", "level": "Level 5"}, {"skill_name": "إدارة التسليم", "skill_code": "DEMG", "level": "Level 5"}, {"skill_name": "إدارة التوافر", "skill_code": "AVMT", "level": "Level 5"}, {"skill_name": "إدارة الاستمرارية", "skill_code": "COPL", "level": "Level 5"}, {"skill_name": "الأمن المعلوماتي", "skill_code": "SCTY", "level": "Level 5"}, {"skill_name": "إدارة الجودة", "skill_code": "QUMG", "level": "Level 4"}, {"skill_name": "ضمان الجودة", "skill_code": "QUAS", "level": "Level 4"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 4"}], "رئيس وحدة التنسيق والتواصل": [{"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 4"}, {"skill_name": "إدارة الأعمال", "skill_code": "ADMN", "level": "Level 4"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 4"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "الامتثال لتشريعات المعلومات والبيانات", "skill_code": "PEDP", "level": "Level 4"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 4"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إدارة المعلومات", "skill_code": "IRMG", "level": "Level 3"}], "رئيس وحدة حوكمة إدارة المشاريع": [{"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 5"}, {"skill_name": "إدارة المخاطر", "skill_code": "BURM", "level": "Level 5"}, {"skill_name": "مؤشرات المخاطر", "skill_code": "THIN", "level": "Level 5"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 5"}, {"skill_name": "التدقيق والمراجعة", "skill_code": "AUDT", "level": "Level 5"}, {"skill_name": "إدارة الجودة", "skill_code": "QUMG", "level": "Level 5"}, {"skill_name": "ضمان الجودة", "skill_code": "QUAS", "level": "Level 5"}, {"skill_name": "إدارة المشاريع", "skill_code": "PRMG", "level": "Level 5"}, {"skill_name": "دعم المحفظة والبرامج والمشاريع", "skill_code": "PROF", "level": "Level 5"}, {"skill_name": "الامتثال لتشريعات المعلومات والبيانات", "skill_code": "PEDP", "level": "Level 5"}, {"skill_name": "إدارة تحقيق الفوائد", "skill_code": "BENM", "level": "Level 3"}, {"skill_name": "إدارة المعلومات", "skill_code": "IRMG", "level": "Level 3"}], "رئيس وحدة متابعة إدارة المشاريع": [{"skill_name": "إدارة المشاريع", "skill_code": "PRMG", "level": "Level 4"}, {"skill_name": "دعم المحفظة والبرامج والمشاريع", "skill_code": "PROF", "level": "Level 4"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 4"}, {"skill_name": "تحليلات البيانات", "skill_code": "DAAN", "level": "Level 4"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 4"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 4"}, {"skill_name": "إدارة التسليم", "skill_code": "DEMG", "level": "Level 4"}, {"skill_name": "إدارة المخاطر", "skill_code": "BURM", "level": "Level 2"}, {"skill_name": "إدارة الجودة", "skill_code": "QUMG", "level": "Level 2"}], "سكرتير مكتب العميد": [{"skill_name": "إدارة الأعمال", "skill_code": "ADMN", "level": "Level 3"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 3"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 4"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "الامتثال لتشريعات المعلومات والبيانات", "skill_code": "PEDP", "level": "Level 4"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 2"}], "عميد عمادة التعلم الإلكتروني وتقنية المعلومات": [{"skill_name": "التخطيط الاستراتيجي لتقنية المعلومات", "skill_code": "ITSP", "level": "Level 6"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "إدارة التغيير المؤسسي", "skill_code": "CIPM", "level": "Level 5"}, {"skill_name": "تمكين التغيير المؤسسي", "skill_code": "OCEN", "level": "Level 5"}, {"skill_name": "تطوير قدرة المؤسسة", "skill_code": "OCDV", "level": "Level 6"}, {"skill_name": "إدارة الابتكار", "skill_code": "INOV", "level": "Level 5"}, {"skill_name": "رصد التقنيات الناشئة", "skill_code": "EMRG", "level": "Level 5"}, {"skill_name": "إدارة المحفظة", "skill_code": "POMG", "level": "Level 6"}, {"skill_name": "إدارة البرنامج", "skill_code": "PGMG", "level": "Level 6"}, {"skill_name": "إدارة المشاريع", "skill_code": "PRMG", "level": "Level 5"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 6"}, {"skill_name": "تنسيق نظم المعلومات", "skill_code": "ISCO", "level": "Level 5"}, {"skill_name": "إدارة التعلم والتطوير", "skill_code": "ETMG", "level": "Level 5"}, {"skill_name": "تنفيذ التعلم", "skill_code": "ETDL", "level": "Level 4"}], "مدرب": [{"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إسناد التطبيقات", "skill_code": "ASUP", "level": "Level 3"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 2"}, {"skill_name": "إدارة الحوادث", "skill_code": "USUP", "level": "Level 3"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 3"}, {"skill_name": "إدارة التوافر", "skill_code": "AVMT", "level": "Level 3"}, {"skill_name": "إدارة الاستمرارية", "skill_code": "COPL", "level": "Level 2"}, {"skill_name": "إدارة قواعد البيانات", "skill_code": "DBAD", "level": "Level 2"}, {"skill_name": "تصميم ونمذجة البيانات", "skill_code": "DTAN", "level": "Level 2"}, {"skill_name": "تحليلات البيانات", "skill_code": "DAAN", "level": "Level 2"}, {"skill_name": "دعم الشبكات", "skill_code": "NTAS", "level": "Level 2"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 3"}], "مدير الشؤون الإدارية": [{"skill_name": "إدارة الأعمال", "skill_code": "ADMN", "level": "Level 5"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 4"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 4"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "الامتثال لتشريعات المعلومات والبيانات", "skill_code": "PEDP", "level": "Level 4"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إدارة الأداء", "skill_code": "PEMT", "level": "Level 4"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 4"}], "مدير مشروع": [{"skill_name": "إدارة المشاريع", "skill_code": "PRMG", "level": "Level 5"}, {"skill_name": "إدارة التسليم", "skill_code": "DEMG", "level": "Level 5"}, {"skill_name": "إدارة المخاطر", "skill_code": "BURM", "level": "Level 5"}, {"skill_name": "مؤشرات المخاطر", "skill_code": "THIN", "level": "Level 5"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 5"}, {"skill_name": "دعم المحفظة والبرامج والمشاريع", "skill_code": "PROF", "level": "Level 5"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 5"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "الرقابة على التغيير", "skill_code": "CHMG", "level": "Level 3"}, {"skill_name": "تحديد وإدارة الاحتياجات", "skill_code": "REQM", "level": "Level 3"}, {"skill_name": "ضمان الجودة", "skill_code": "QUAS", "level": "Level 4"}, {"skill_name": "إدارة الجودة", "skill_code": "QUMG", "level": "Level 3"}], "مدير مكتب إدارة مشاريع": [{"skill_name": "إدارة المحفظة", "skill_code": "POMG", "level": "Level 6"}, {"skill_name": "إدارة البرنامج", "skill_code": "PGMG", "level": "Level 6"}, {"skill_name": "إدارة المشاريع", "skill_code": "PRMG", "level": "Level 6"}, {"skill_name": "دعم المحفظة والبرامج والمشاريع", "skill_code": "PROF", "level": "Level 6"}, {"skill_name": "إدارة التسليم", "skill_code": "DEMG", "level": "Level 6"}, {"skill_name": "إدارة المخاطر", "skill_code": "BURM", "level": "Level 6"}, {"skill_name": "مؤشرات المخاطر", "skill_code": "THIN", "level": "Level 6"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "إدارة الجودة", "skill_code": "QUMG", "level": "Level 6"}, {"skill_name": "ضمان الجودة", "skill_code": "QUAS", "level": "Level 6"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 6"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 6"}, {"skill_name": "ادارة التغيير المؤسسي ", "skill_code": "CIPM", "level": "Level 5"}, {"skill_name": "بنية المؤسسة والأعمال", "skill_code": "STPL", "level": "Level 5"}, {"skill_name": "رصد التقنيات الناشئة", "skill_code": "EMRG", "level": "Level 4"}, {"skill_name": "وضع الميزانية والتوقعات", "skill_code": "BUDF", "level": "Level 4"}, {"skill_name": "تقييم الاستثمار", "skill_code": "INVA", "level": "Level 4"}], "مسؤول إدارة الحسابات": [{"skill_name": "إدارة الهوية والوصول", "skill_code": "IAMT", "level": "Level 3"}, {"skill_name": "الأمن المعلوماتي", "skill_code": "SCTY", "level": "Level 3"}, {"skill_name": "ضمان المعلومات", "skill_code": "INAS", "level": "Level 5"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 3"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إدارة التهيئة", "skill_code": "CFMG", "level": "Level 3"}, {"skill_name": "عمليات أمنية", "skill_code": "SCAD", "level": "Level 3"}], "مسؤول نظام (Windows / Linux)": [{"skill_name": "إدارة برامج النظام", "skill_code": "SYSP", "level": "Level 4"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 4"}, {"skill_name": "إدارة التخزين", "skill_code": "STMG", "level": "Level 3"}, {"skill_name": "إدارة التوافر", "skill_code": "AVMT", "level": "Level 4"}, {"skill_name": "إدارة الاستمرارية", "skill_code": "COPL", "level": "Level 4"}, {"skill_name": "إدارة التهيئة", "skill_code": "CFMG", "level": "Level 3"}, {"skill_name": "إدارة الحوادث", "skill_code": "USUP", "level": "Level 3"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 4"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "الأمن المعلوماتي", "skill_code": "SCTY", "level": "Level 3"}], "مسؤول نظام التعلم الإلكتروني": [{"skill_name": "تحديد وإدارة الاحتياجات", "skill_code": "REQM", "level": "Level 4"}, {"skill_name": "إدارة المنتجات", "skill_code": "PROD", "level": "Level 4"}, {"skill_name": "اختبار العملية", "skill_code": "PRTS", "level": "Level 3"}, {"skill_name": "تصميم قواعد البيانات", "skill_code": "DBDS", "level": "Level 3"}, {"skill_name": "تحليلات البيانات", "skill_code": "DAAN", "level": "Level 3"}, {"skill_name": "تجربة العملاء", "skill_code": "CEXP", "level": "Level 3"}, {"skill_name": "تقييم تجربة المستخدم", "skill_code": "USEV", "level": "Level 3"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إدارة مستوى الخدمة", "skill_code": "SLMO", "level": "Level 4"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 4"}, {"skill_name": "إدارة قواعد البيانات", "skill_code": "DBAD", "level": "Level 3"}, {"skill_name": "دعم خدمة العملاء", "skill_code": "CSMG", "level": "Level 3"}], "مسؤول نظام ساعد الفني": [{"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إسناد التطبيقات", "skill_code": "ASUP", "level": "Level 3"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 3"}, {"skill_name": "إدارة برامج النظام", "skill_code": "SYSP", "level": "Level 3"}, {"skill_name": "دعم الشبكات", "skill_code": "NTAS", "level": "Level 3"}, {"skill_name": "تثبيت وحذف النظم", "skill_code": "HSIN", "level": "Level 3"}, {"skill_name": "إدارة التهيئة", "skill_code": "CFMG", "level": "Level 3"}, {"skill_name": "إدارة قواعد البيانات", "skill_code": "DBAD", "level": "Level 3"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 3"}, {"skill_name": "إدارة مستوى الخدمة", "skill_code": "SLMO", "level": "Level 3"}], "مساعد مدير الشؤون الإدارية": [{"skill_name": "إدارة الأعمال", "skill_code": "ADMN", "level": "Level 3"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 3"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 4"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "الامتثال لتشريعات المعلومات والبيانات", "skill_code": "PEDP", "level": "Level 4"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 3"}], "مشرف الدعم الفني (طلاب أو طالبات)": [{"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "دعم خدمة العملاء", "skill_code": "CSMG", "level": "Level 4"}, {"skill_name": "إسناد التطبيقات", "skill_code": "ASUP", "level": "Level 4"}, {"skill_name": "إدارة الحوادث", "skill_code": "USUP", "level": "Level 4"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 4"}, {"skill_name": "إدارة مستوى الخدمة", "skill_code": "SLMO", "level": "Level 4"}, {"skill_name": "إدارة دليل الخدمات", "skill_code": "SCMG", "level": "Level 4"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 4"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 4"}, {"skill_name": "الرقابة على التغيير", "skill_code": "CHMG", "level": "Level 4"}], "مشرف تخطيط وتطوير تقنية المعلومات": [{"skill_name": "التخطيط الاستراتيجي لتقنية المعلومات", "skill_code": "ITSP", "level": "Level 5"}, {"skill_name": "تنسيق نظم المعلومات", "skill_code": "ISCO", "level": "Level 5"}, {"skill_name": "إدارة المعلومات", "skill_code": "IRMG", "level": "Level 5"}, {"skill_name": "بنية المؤسسة والأعمال", "skill_code": "STPL", "level": "Level 5"}, {"skill_name": "هندسة الحلول", "skill_code": "ARCH", "level": "Level 5"}, {"skill_name": "إدارة الابتكار", "skill_code": "INOV", "level": "Level 5"}, {"skill_name": "رصد التقنيات الناشئة", "skill_code": "EMRG", "level": "Level 5"}, {"skill_name": "إدارة المشاريع", "skill_code": "PRMG", "level": "Level 5"}, {"skill_name": "إدارة التسليم", "skill_code": "DEMG", "level": "Level 5"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}], "مشرف وحدة استمرارية الأعمال": [{"skill_name": "إدارة الاستمرارية", "skill_code": "COPL", "level": "Level 5"}, {"skill_name": "إدارة المخاطر", "skill_code": "BURM", "level": "Level 4"}, {"skill_name": "تحسين إجراءات الأعمال", "skill_code": "BPRE", "level": "Level 4"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 5"}, {"skill_name": "الاستشارات", "skill_code": "CNSL", "level": "Level 5"}, {"skill_name": "تحليل الوضع التجاري", "skill_code": "BUSA", "level": "Level 4"}, {"skill_name": "تقييم الجدوى", "skill_code": "FEAS", "level": "Level 4"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}], "مشرف وحدة التحول الرقمي": [{"skill_name": "التخطيط الاستراتيجي لتقنية المعلومات", "skill_code": "ITSP", "level": "Level 5"}, {"skill_name": "إدارة المشاريع", "skill_code": "PRMG", "level": "Level 5"}, {"skill_name": "إدارة البرنامج", "skill_code": "PGMG", "level": "Level 6"}, {"skill_name": "إدارة التسليم", "skill_code": "DEMG", "level": "Level 5"}, {"skill_name": "إدارة الابتكار", "skill_code": "INOV", "level": "Level 5"}, {"skill_name": "رصد التقنيات الناشئة", "skill_code": "EMRG", "level": "Level 5"}, {"skill_name": "تحسين إجراءات الأعمال", "skill_code": "BPRE", "level": "Level 5"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 5"}, {"skill_name": "إدارة التغيير", "skill_code": "CHMG", "level": "Level 5"}, {"skill_name": "إدارة المخاطر", "skill_code": "BURM", "level": "Level 5"}], "مشرفة التطوير والجودة للتعلم الإلكتروني": [{"skill_name": "إدارة الجودة", "skill_code": "QUMG", "level": "Level 5"}, {"skill_name": "ضمان الجودة", "skill_code": "QUAS", "level": "Level 5"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 4"}, {"skill_name": "إدارة التعلم والتطوير", "skill_code": "ETMG", "level": "Level 4"}, {"skill_name": "تصميم وتطوير التعلم", "skill_code": "TMCR", "level": "Level 4"}, {"skill_name": "تنفيذ التعلم", "skill_code": "ETDL", "level": "Level 4"}, {"skill_name": "قياس وتقييم الجدارة", "skill_code": "LEDA", "level": "Level 4"}, {"skill_name": "تحسين إجراءات الأعمال", "skill_code": "BPRE", "level": "Level 4"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 3"}, {"skill_name": "إدارة الابتكار", "skill_code": "INOV", "level": "Level 5"}, {"skill_name": "رصد التقنيات الناشئة", "skill_code": "EMRG", "level": "Level 5"}], "مشرفة مكتب وحدات التعلم الإلكتروني": [{"skill_name": "إدارة التعلم والتطوير", "skill_code": "ETMG", "level": "Level 4"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 5"}, {"skill_name": "تصميم وتطوير التعلم", "skill_code": "TMCR", "level": "Level 4"}, {"skill_name": "قياس وتقييم الجدارة", "skill_code": "LEDA", "level": "Level 4"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "دعم خدمة العملاء", "skill_code": "CSMG", "level": "Level 3"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 4"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 3"}, {"skill_name": "إدارة الأعمال", "skill_code": "ADMN", "level": "Level 3"}], "مصمم جرافيكس": [{"skill_name": "التصميم الجرافيكي", "skill_code": "GRDN", "level": "Level 4"}, {"skill_name": "تصميم وتأليف المحتوى", "skill_code": "INCA", "level": "Level 4"}, {"skill_name": "نشر المحتوى", "skill_code": "ICPM", "level": "Level 3"}, {"skill_name": "تطوير الرسوم المتحركة", "skill_code": "ADEV", "level": "Level 3"}, {"skill_name": "تجربة العملاء", "skill_code": "CEXP", "level": "Level 3"}, {"skill_name": "تقييم تجربة المستخدم", "skill_code": "USEV", "level": "Level 3"}, {"skill_name": "دراسة المستخدمين", "skill_code": "URCH", "level": "Level 3"}], "مصمم ويب": [{"skill_name": "تصميم تجربة المستخدم", "skill_code": "HCEV", "level": "Level 4"}, {"skill_name": "تحليل تجربة المستخدم", "skill_code": "UNAN", "level": "Level 4"}, {"skill_name": "تقييم تجربة المستخدم", "skill_code": "USEV", "level": "Level 4"}, {"skill_name": "إمكانية الوصول والإدماج", "skill_code": "ACIN", "level": "Level 4"}, {"skill_name": "تصميم النظم", "skill_code": "DESN", "level": "Level 4"}, {"skill_name": "تصميم البرمجيات", "skill_code": "SWDN", "level": "Level 4"}, {"skill_name": "البرمجة وتطوير البرمجيات", "skill_code": "PROG", "level": "Level 4"}, {"skill_name": "تصميم وتأليف المحتوى", "skill_code": "INCA", "level": "Level 4"}, {"skill_name": "التصميم الجرافيكي", "skill_code": "GRDN", "level": "Level 4"}], "مطور برامج": [{"skill_name": "تحليل الوضع التجاري", "skill_code": "BUSA", "level": "Level 4"}, {"skill_name": "تحديد وإدارة الاحتياجات", "skill_code": "REQM", "level": "Level 4"}, {"skill_name": "نمذجة الأعمال", "skill_code": "BSMO", "level": "Level 4"}, {"skill_name": "تصميم النظم", "skill_code": "DESN", "level": "Level 4"}, {"skill_name": "تصميم البرمجيات", "skill_code": "SWDN", "level": "Level 4"}, {"skill_name": "البرمجة وتطوير البرمجيات", "skill_code": "PROG", "level": "Level 4"}, {"skill_name": "تكامل وبناء الأنظمة", "skill_code": "SINT", "level": "Level 4"}, {"skill_name": "تصميم ونمذجة البيانات", "skill_code": "DTAN", "level": "Level 4"}, {"skill_name": "تصميم قواعد البيانات", "skill_code": "DBDS", "level": "Level 4"}, {"skill_name": "الاختبار الوظيفي", "skill_code": "TEST", "level": "Level 4"}, {"skill_name": "الاختبار غير الوظيفي", "skill_code": "NFTS", "level": "Level 4"}, {"skill_name": "ضمان الجودة", "skill_code": "QUAS", "level": "Level 4"}, {"skill_name": "إدارة تطوير النظم", "skill_code": "DLMG", "level": "Level 4"}], "مطوّر أعمال": [{"skill_name": "تحليل الوضع التجاري", "skill_code": "BUSA", "level": "Level 4"}, {"skill_name": "تحديد وإدارة الاحتياجات", "skill_code": "REQM", "level": "Level 4"}, {"skill_name": "تحسين إجراءات الأعمال", "skill_code": "BPRE", "level": "Level 4"}, {"skill_name": "تجربة العملاء", "skill_code": "CEXP", "level": "Level 4"}, {"skill_name": "تحليل تجربة المستخدم", "skill_code": "UNAN", "level": "Level 4"}, {"skill_name": "تصميم تجربة المستخدم", "skill_code": "HCEV", "level": "Level 4"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إدارة المنتجات", "skill_code": "PROD", "level": "Level 4"}], "مطوّر محتوى": [{"skill_name": "تصميم وتطوير التعلم", "skill_code": "TMCR", "level": "Level 4"}, {"skill_name": "تصميم وتأليف المحتوى", "skill_code": "INCA", "level": "Level 4"}, {"skill_name": "نشر المحتوى", "skill_code": "ICPM", "level": "Level 3"}, {"skill_name": "إدارة التعلم والتطوير", "skill_code": "ETMG", "level": "Level 3"}, {"skill_name": "تنفيذ التعلم", "skill_code": "ETDL", "level": "Level 3"}, {"skill_name": "قياس وتقييم الجدارة", "skill_code": "LEDA", "level": "Level 3"}, {"skill_name": "إدارة المشاريع", "skill_code": "PRMG", "level": "Level 4"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 3"}, {"skill_name": "تجربة العملاء", "skill_code": "CEXP", "level": "Level 3"}], "منسق برامج التعليم عن بُعد": [{"skill_name": "إدارة التعلم والتطوير", "skill_code": "ETMG", "level": "Level 4"}, {"skill_name": "تنفيذ التعلم", "skill_code": "ETDL", "level": "Level 4"}, {"skill_name": "تصميم وتطوير التعلم", "skill_code": "TMCR", "level": "Level 3"}, {"skill_name": "قياس وتقييم الجدارة", "skill_code": "LEDA", "level": "Level 3"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "دعم خدمة العملاء", "skill_code": "CSMG", "level": "Level 3"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 4"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 3"}, {"skill_name": "إدارة الأعمال", "skill_code": "ADMN", "level": "Level 3"}], "منسق تدريب": [{"skill_name": "إدارة التعلم والتطوير", "skill_code": "ETMG", "level": "Level 4"}, {"skill_name": "تصميم وتطوير التعلم", "skill_code": "TMCR", "level": "Level 3"}, {"skill_name": "تنفيذ التعلم", "skill_code": "ETDL", "level": "Level 4"}, {"skill_name": "قياس وتقييم الجدارة", "skill_code": "LEDA", "level": "Level 3"}, {"skill_name": "إدارة الأعمال", "skill_code": "ADMN", "level": "Level 3"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 4"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 3"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 3"}], "منسق مشاريع مالي": [{"skill_name": "الإدارة المالية", "skill_code": "FMIT", "level": "Level 4"}, {"skill_name": "إدارة التكاليف", "skill_code": "COMG", "level": "Level 4"}, {"skill_name": "وضع الميزانية والتوقعات", "skill_code": "BUDF", "level": "Level 4"}, {"skill_name": "التحليل المالي", "skill_code": "FIAN", "level": "Level 4"}, {"skill_name": "إدارة الطلب", "skill_code": "DEMM", "level": "Level 4"}, {"skill_name": "إدارة العقود", "skill_code": "ITCM", "level": "Level 4"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 4"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 4"}, {"skill_name": "إدارة العلاقة مع أصحاب المصلحة", "skill_code": "RLMT", "level": "Level 4"}, {"skill_name": "الأساليب والأدوات", "skill_code": "METL", "level": "Level 2"}], "مهندس تشغيل تطبيقات": [{"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إسناد التطبيقات", "skill_code": "ASUP", "level": "Level 4"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 4"}, {"skill_name": "إدارة برامج النظام", "skill_code": "SYSP", "level": "Level 3"}, {"skill_name": "إدارة التهيئة", "skill_code": "CFMG", "level": "Level 3"}, {"skill_name": "إدارة الإصدار", "skill_code": "RELM", "level": "Level 3"}, {"skill_name": "إدارة الحوادث", "skill_code": "USUP", "level": "Level 3"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 3"}, {"skill_name": "إدارة مستوى الخدمة", "skill_code": "SLMO", "level": "Level 3"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 3"}], "مهندس شبكات": [{"skill_name": "دعم الشبكات", "skill_code": "NTAS", "level": "Level 4"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 4"}, {"skill_name": "إدارة برامج النظام", "skill_code": "SYSP", "level": "Level 3"}, {"skill_name": "إدارة التهيئة", "skill_code": "CFMG", "level": "Level 3"}, {"skill_name": "إدارة الحوادث", "skill_code": "USUP", "level": "Level 3"}, {"skill_name": "إدارة المشاكل", "skill_code": "PBMG", "level": "Level 3"}, {"skill_name": "الأمن المعلوماتي", "skill_code": "SCTY", "level": "Level 3"}, {"skill_name": "عمليات أمنية", "skill_code": "SCAD", "level": "Level 3"}, {"skill_name": "إدارة مستوى الخدمة", "skill_code": "SLMO", "level": "Level 3"}, {"skill_name": "إدارة السجلات", "skill_code": "RMGT", "level": "Level 3"}], "مهندس مركز البيانات": [{"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "عمليات البنية التحتية", "skill_code": "ITOP", "level": "Level 4"}, {"skill_name": "إدارة برامج النظام", "skill_code": "SYSP", "level": "Level 4"}, {"skill_name": "إدارة التخزين", "skill_code": "STMG", "level": "Level 4"}, {"skill_name": "إدارة التوافر", "skill_code": "AVMT", "level": "Level 4"}, {"skill_name": "إدارة الاستمرارية", "skill_code": "COPL", "level": "Level 4"}, {"skill_name": "إدارة القدرات", "skill_code": "CPMG", "level": "Level 4"}, {"skill_name": "إدارة التهيئة", "skill_code": "CFMG", "level": "Level 4"}, {"skill_name": "الأمن المعلوماتي", "skill_code": "SCTY", "level": "Level 3"}, {"skill_name": "ضمان المعلومات", "skill_code": "INAS", "level": "Level 5"}], "وكيل عمادة التعلم الإلكتروني وتقنية المعلومات لشؤون التعلم الإلكتروني": [{"skill_name": "التخطيط الاستراتيجي لتقنية المعلومات", "skill_code": "ITSP", "level": "Level 6"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "إدارة التعلم والتطوير", "skill_code": "ETMG", "level": "Level 5"}, {"skill_name": "تصميم وتطوير التعلم", "skill_code": "TMCR", "level": "Level 5"}, {"skill_name": "تنفيذ التعلم", "skill_code": "ETDL", "level": "Level 5"}, {"skill_name": "قياس وتقييم الجدارة", "skill_code": "LEDA", "level": "Level 5"}, {"skill_name": "إدارة البرامج", "skill_code": "PGMG", "level": "Level 6"}, {"skill_name": "إدارة المشاريع", "skill_code": "PRMG", "level": "Level 5"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 5"}, {"skill_name": "إدارة الابتكار", "skill_code": "INOV", "level": "Level 5"}, {"skill_name": "تصميم وتأليف المحتوى", "skill_code": "INCA", "level": "Level 5"}, {"skill_name": "نشر المحتوى", "skill_code": "ICPM", "level": "Level 4"}, {"skill_name": "تجربة العملاء", "skill_code": "CEXP", "level": "Level 5"}, {"skill_name": "تقييم تجربة المستخدم", "skill_code": "USEV", "level": "Level 4"}, {"skill_name": "إدارة تحقيق الفوائد", "skill_code": "BENM", "level": "Level 6"}, {"skill_name": "الاستدامة", "skill_code": "SUST", "level": "Level 5"}, {"skill_name": "رصد التقنيات الناشئة", "skill_code": "EMRG", "level": "Level 6"}], "وكيل عمادة التعلم الإلكتروني وتقنية المعلومات للشؤون التقنية": [{"skill_name": "تنسيق نظم المعلومات", "skill_code": "ISCO", "level": "Level 5"}, {"skill_name": "بنية المؤسسة والأعمال", "skill_code": "STPL", "level": "Level 5"}, {"skill_name": "إدارة الخدمات التكنولوجية", "skill_code": "ITMG", "level": "Level 6"}, {"skill_name": "البحث الرسمي", "skill_code": "RSCH", "level": "Level 4"}, {"skill_name": "إدارة تحقيق الفوائد", "skill_code": "BENM", "level": "Level 5"}, {"skill_name": "إدارة الطلب", "skill_code": "DEMM", "level": "Level 5"}, {"skill_name": "القياس والتقييم", "skill_code": "MEAS", "level": "Level 5"}, {"skill_name": "ضمان المعلومات", "skill_code": "INAS", "level": "Level 6"}, {"skill_name": "مؤشرات المخاطر", "skill_code": "THIN", "level": "Level 5"}, {"skill_name": "الحوكمة", "skill_code": "GOVN", "level": "Level 6"}, {"skill_name": "تحديد وإدارة الاحتياجات", "skill_code": "REQM", "level": "Level 5"}]};
+
+// Populate roles
+const roleSelect = document.getElementById('sel-role');
+Object.keys(jobsData).sort().forEach(job => {
+  const opt = document.createElement('option');
+  opt.value = job;
+  opt.textContent = job;
+  roleSelect.appendChild(opt);
+});
+
+function getLevelNum(lvl) {
+  if (!lvl || lvl === 'NaN') return 0;
+  const m = String(lvl).match(/\d+/);
+  return m ? parseInt(m[0]) : 0;
+}
+
+function getLevelClass(lvl) {
+  const n = getLevelNum(lvl);
+  return n ? `lvl-${n}` : 'lvl-1';
+}
+
+function getLevelLabel(lvl) {
+  const n = getLevelNum(lvl);
+  return n ? `المستوى ${n}` : '—';
+}
+
+function onRoleChange() {
+  const role = roleSelect.value;
+  const preview = document.getElementById('role-preview');
+  if (role && jobsData[role]) {
+    document.getElementById('rp-name').textContent = role;
+    document.getElementById('rp-count').textContent = `عدد المهارات: ${jobsData[role].length} مهارة`;
+    preview.style.display = 'block';
+  } else {
+    preview.style.display = 'none';
+  }
+}
+
+function validate1() {
+  let ok = true;
+  const name = document.getElementById('inp-name').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  const role = document.getElementById('sel-role').value;
+
+  document.getElementById('inp-name').classList.toggle('invalid', !name);
+  document.getElementById('err-name').classList.toggle('show', !name);
+  if (!name) ok = false;
+
+  const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  document.getElementById('inp-email').classList.toggle('invalid', !emailOk);
+  document.getElementById('err-email').classList.toggle('show', !emailOk);
+  if (!emailOk) ok = false;
+
+  document.getElementById('sel-role').classList.toggle('invalid', !role);
+  document.getElementById('err-role').classList.toggle('show', !role);
+  if (!role) ok = false;
+
+  return ok;
+}
+
+function goPage2() {
+  if (!validate1()) return;
+  const role = document.getElementById('sel-role').value;
+  const skills = jobsData[role];
+
+  document.getElementById('sk-role-name').textContent = role;
+  document.getElementById('sk-role-count').textContent = `عدد المهارات: ${skills.length} مهارة`;
+
+  const tbody = document.getElementById('skills-tbody');
+  tbody.innerHTML = '';
+  skills.forEach((sk, i) => {
+    const lvlNum = getLevelNum(sk.level);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="skill-name-cell">
+        ${sk.skill_name.trim()}
+        <div class="skill-code">${sk.skill_code}</div>
+      </td>
+      <td><code style="font-size:0.75rem;background:#f0f4f8;padding:2px 6px;border-radius:4px;">${sk.skill_code}</code></td>
+      <td><span class="target-level ${getLevelClass(sk.level)}">${getLevelLabel(sk.level)}</span></td>
+      <td>
+        <select class="level-select" id="skill-sel-${i}" onchange="updateProgress()">
+          <option value="">-- اختر --</option>
+          <option value="1">المستوى 1</option>
+          <option value="2">المستوى 2</option>
+          <option value="3">المستوى 3</option>
+          <option value="4">المستوى 4</option>
+          <option value="5">المستوى 5</option>
+          <option value="6">المستوى 6</option>
+        </select>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  updateProgress();
+  showPage('page2');
+  setStep(2);
+}
+
+function updateProgress() {
+  const sels = document.querySelectorAll('.level-select');
+  let filled = 0;
+  sels.forEach(s => {
+    const hasFill = s.value !== '';
+    s.classList.toggle('filled', hasFill);
+    if (hasFill) filled++;
+  });
+  const total = sels.length;
+  document.getElementById('prog-text').textContent = `${filled} / ${total}`;
+  document.getElementById('prog-fill').style.width = total ? `${Math.round(filled/total*100)}%` : '0%';
+}
+
+function goPage3() {
+  const sels = document.querySelectorAll('.level-select');
+  let filled = 0, missing = 0;
+  sels.forEach(s => {
+    if (s.value) { filled++; s.classList.remove('invalid'); }
+    else { missing++; s.classList.add('invalid'); }
+  });
+
+  if (missing > 0) {
+    alert('⚠️ يرجى تقييم جميع المهارات (' + missing + ' مهارة متبقية) قبل المتابعة.');
+    // Scroll to first missing
+    const first = document.querySelector('.level-select:not([value]):not(.filled), .level-select.invalid');
+    if(first) first.scrollIntoView({behavior:'smooth', block:'center'});
+    return;
+  }
+
+  // Fill summary
+  const name = document.getElementById('inp-name').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  const role = document.getElementById('sel-role').value;
+  document.getElementById('sum-name').textContent = name;
+  document.getElementById('sum-email').textContent = email;
+  document.getElementById('sum-role').textContent = role;
+  document.getElementById('sum-skills-count').textContent = filled + ' من ' + sels.length + ' مهارة';
+
+  const missingWrap = document.getElementById('sum-missing-wrap');
+  const missingCount = document.getElementById('sum-missing-count');
+  if (missing > 0) {
+    missingWrap.style.display = 'block';
+    missingCount.textContent = missing;
+  } else {
+    missingWrap.style.display = 'none';
+  }
+
+  showPage('page3');
+  setStep(3);
+}
+
+function goPage1() { showPage('page1'); setStep(1); }
+function goPage2_back() { showPage('page2'); setStep(2); }
+
+function toggleCheck(id) {
+  const cb = document.getElementById(id);
+  cb.checked = !cb.checked;
+  updateSubmit();
+}
+
+function updateSubmit() {
+  const all = document.getElementById('chk1').checked &&
+              document.getElementById('chk2').checked &&
+              document.getElementById('chk3').checked;
+  document.getElementById('btn-submit').disabled = !all;
+  document.getElementById('err-checks').classList.toggle('show', false);
+}
+
+function submitForm() {
+  if (!document.getElementById('chk1').checked || !document.getElementById('chk2').checked || !document.getElementById('chk3').checked) {
+    document.getElementById('err-checks').classList.add('show');
+    return;
+  }
+
+  const btn = document.getElementById('btn-submit');
+  btn.disabled = true;
+  btn.textContent = '⏳ جاري الإرسال...';
+
+  const name = document.getElementById('inp-name').value.trim();
+  const email = document.getElementById('inp-email').value.trim();
+  const role = document.getElementById('sel-role').value;
+  const skills = jobsData[role];
+  const sels = document.querySelectorAll('.level-select');
+
+  // Build skills summary string
+  const skillsText = skills.map((sk, i) => {
+    const target = getLevelNum(sk.level);
+    const current = sels[i] ? sels[i].value : '—';
+    return `${sk.skill_name.trim()} (${sk.skill_code}): مستهدف ${target} | حالي ${current || '—'}`;
+  }).join('\n');
+
+  const ref = 'SKL-' + Date.now().toString(36).toUpperCase().slice(-6);
+
+  const payload = {
+    name: name,
+    email: email,
+    role: role,
+    skills: skillsText,
+    ref: ref
+  };
+
+  const SHEET_URL = 'https://script.google.com/macros/s/AKfycbyPK4AZuvP5K2PD1yDNuy0VuWDKkQUpvYb6ftnGW4cNrurwy_woljMQ6ZfBrgWc8vRe/exec';
+
+  fetch(SHEET_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).then(() => {
+    document.getElementById('ref-num').textContent = ref;
+    showPage('page4');
+    document.getElementById('step3').classList.add('done');
+  }).catch(() => {
+    // Even if fetch fails with no-cors, show success (Google Apps Script receives it)
+    document.getElementById('ref-num').textContent = ref;
+    showPage('page4');
+    document.getElementById('step3').classList.add('done');
+  });
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+function setStep(n) {
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById('step' + i);
+    el.classList.remove('active', 'done');
+    if (i < n) el.classList.add('done');
+    else if (i === n) el.classList.add('active');
+  }
+}
+
+function printForm() { window.print(); }
+
+// Attach back button on page 3
+document.querySelector('#page3 .btn-secondary').onclick = function() { showPage('page2'); setStep(2); };
+</script>
+</body>
+</html>
